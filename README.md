@@ -13,9 +13,13 @@ An intelligent automation system built with **n8n** that helps you stay on top o
 - **Telegram Bot API:** For real-time notifications.
 - **IMAP:** To connect and monitor email accounts.
 
-## 📸 Project Showcase
-[Add your screenshots here]
-*Insert your screenshots of the workflow and the Telegram bot messages.*
+### 📸 Workflow & Result
+
+**The Automation Workflow:**
+![Workflow](The%20Automation%20Workflow.jpeg)
+
+**Telegram Notification:**
+![Telegram](Telegram%20Notification.jpeg)
 
 ## ⚙️ How to Setup
 1. Import the `workflow.json` file into your n8n instance.
