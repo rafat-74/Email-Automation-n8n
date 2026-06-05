@@ -1,0 +1,190 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "trackLastMessageId": false
+        }
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2.1,
+      "position": [
+        112,
+        32
+      ],
+      "id": "5d688da1-1eaa-48b8-9ece-dc51c49213ac",
+      "name": "Email Trigger (IMAP)",
+      "credentials": {
+        "imap": {
+          "id": "InRWgFjSpgmSo9Ii",
+          "name": "IMAP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\"أنت مساعد ذكي ومصفّي رسائل إلكترونية محترف. مهمتك هي قراءة الإيميل القادم وتحديد ما إذا كان إيميلاً مهماً (مثل: رسائل الجامعة، مشاريع التخرج، الـ Architecture Diagrams، المهام على ClickUp أو Notion، طلبات التوظيف والمقابلات، أو تنبيهات أمنية حرجة) أو إيميل غير مهم (إعلانات، سبام، عروض، عروض ترويجية).\n\nشروط الرد الصارمة:\n\nإذا كان الإيميل مهمًا: ابدأ ردك بكلمة [IMPORTANT] ثم سطر جديد، واكتب ملخصاً سريعاً ومختصراً جداً للإيميل في نقاط مفارقة باللغة العربية.\n\nإذا كان الإيميل غير مهم: رد بكلمة واحدة فقط وهي: [IGNORE] ولا تكتب أي شيء آخر تماماً.\"",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        432,
+        -48
+      ],
+      "id": "5f8cc88e-4dff-44eb-a0e3-dbce1e81de15",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        512,
+        80
+      ],
+      "id": "3d3ba1b7-37ea-4a72-9596-227d5cbfce8c",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "woaeLjWBG4ZeSKJJ",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1108782723",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        32
+      ],
+      "id": "d3df1496-3221-4062-82cb-0c0e7016a453",
+      "name": "Send a text message",
+      "webhookId": "c52d3e8c-b11e-4aed-b905-2f38eb9eba65",
+      "credentials": {
+        "telegramApi": {
+          "id": "pMKZ6mfRzrAIzU8K",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a09df636-71e1-4bbf-8750-0cb566788d1e",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "[IMPORTANT]",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        704,
+        16
+      ],
+      "id": "8c1e80fa-8e3e-4980-8444-650b2e178871",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "maxItems": 3
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        272,
+        16
+      ],
+      "id": "5cfb9ac8-8943-4e29-9bb2-c685d1592bd2",
+      "name": "Limit"
+    }
+  ],
+  "connections": {
+    "Email Trigger (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "be4831a5cd5986cd6cde569dcc3943036da018b38c0da2c8f417060b4ac6d2f4"
+  }
+}
