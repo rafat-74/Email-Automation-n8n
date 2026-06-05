@@ -29,4 +29,4 @@ An intelligent automation system built with **n8n** that helps you stay on top o
 5. Activate the workflow and enjoy!
 
 ---
-*Built with ❤️ by [Your Name]*
+*Built with ❤️ by Rafat Ashraf K.*
